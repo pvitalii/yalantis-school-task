@@ -78,6 +78,21 @@ export class PairsService {
     }
 
     async getRecipientBySenderId(sender: number) {
+        const pairs = await this.getAll();
+        if (pairs.length === 0)
+            throw new HttpException(
+                'Pairs are not formed yet',
+                HttpStatus.BAD_REQUEST
+            );
+        let check = true;
+        pairs.map((object) => {
+            if (object.senderId == sender) check = false;
+        });
+        if (check)
+            throw new HttpException(
+                'There is no sender with this id',
+                HttpStatus.BAD_REQUEST
+            );
         return this.pairsRepository.findOne({ where: { senderId: sender } });
     }
 }
